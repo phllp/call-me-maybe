@@ -1,8 +1,18 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Home from '@pages/home';
+import Layout from '@components/layout';
+import Video from '@pages/video';
+
 function App() {
   return (
-    <>
-      <h1 className="font-extrabold">Call me Maybe</h1>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="video" element={<Video />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
