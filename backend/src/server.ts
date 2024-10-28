@@ -4,6 +4,7 @@ import { createServer as createServerHttps } from 'https';
 import { readFileSync } from 'fs';
 import path from 'path';
 import cors from 'cors';
+import routes from './routes';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -17,6 +18,8 @@ const app = express();
 app.use(cors(corsOptions));
 app.use(express.static(`${__dirname}/public`));
 app.use(express.json());
+
+app.use(routes);
 
 let httpsServer: Server;
 
