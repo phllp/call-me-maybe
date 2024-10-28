@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --NAVBAR_HEIGHT: 64px;
+  --MAIN_COLOR: #fecdd3; /*tailwind rose-200*/
+}
+
+nav {
+  height: var(--NAVBAR_HEIGHT);
+}
+
+.chatContainer {
+  max-height: calc(100svh - var(--NAVBAR_HEIGHT));
+  min-height: calc(100svh - var(--NAVBAR_HEIGHT));
+  background-color: var(--MAIN_COLOR);
+}
+
+.scroll-left {
+  direction: rtl;
+}
+
+.scroll-left > * {
+  direction: ltr;
+}
