@@ -1,17 +1,23 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CheckCheck, Copy, MessageCirclePlus } from 'lucide-react';
+import api from '@external/axios';
 
 export default function InviteLink() {
   const [open, setOpen] = useState(false);
+  const [inviteLink, setInviteLink] = useState('');
 
   const [success, setSuccess] = useState(false);
   const [copyText, setCopyText] = useState('Copy');
 
-  const link = 'https://very-serious-link.com/31e3131231dfknsdf';
+  useEffect(() => {
+    api.get('/invite-link').then((response) => {
+      setInviteLink(response.data);
+    });
+  }, []);
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(link);
+    navigator.clipboard.writeText(inviteLink);
     setSuccess(true);
     setCopyText('Copied!');
     setTimeout(() => {
@@ -41,7 +47,7 @@ export default function InviteLink() {
             className="relative group bg-rose-50 p-2 rounded-sm mt-4 cursor-pointer flex justify-between items-center"
             onClick={copyToClipboard}
           >
-            <a>{link}</a>
+            <a>{inviteLink}</a>
             {success ? (
               <CheckCheck className="text-green-800" />
             ) : (
