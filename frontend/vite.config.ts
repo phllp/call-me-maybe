@@ -11,6 +11,7 @@ export default defineConfig({
       '@components': path.resolve(__dirname, './src/presentation/components'),
       '@utils': path.resolve(__dirname, './src/utils'),
       '@data': path.resolve(__dirname, './src/data'),
+      '@external': path.resolve(__dirname, './src/external'),
       '@core': path.resolve(__dirname, './src/core'),
     },
   },
