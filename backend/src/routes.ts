@@ -17,8 +17,9 @@ routes.get('/invite-link', (req, res) => {
   res.status(200).send('https://discord.gg/invite');
 });
 
-routes.get('/validate-token', (req, res) => {
-  const token = req.query.token as string;
+routes.post('/validate-token', (req, res) => {
+  console.log('Validating token');
+  const token = req.body.token as string;
   const decoded = validateToken(token);
   res.json(decoded);
 });
