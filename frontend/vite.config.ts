@@ -4,6 +4,12 @@ import path from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    https: {
+      key: path.resolve(__dirname, './certs/localhost-key.pem'),
+      cert: path.resolve(__dirname, './certs/localhost-cert.pem'),
+    },
+  },
   plugins: [react()],
   resolve: {
     alias: {
