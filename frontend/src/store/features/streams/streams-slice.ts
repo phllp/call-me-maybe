@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 type StreamState = {
   who: string;
   stream: MediaStream;
+  peerConnection?: RTCPeerConnection;
 };
 
 const initialState: StreamState[] = [];
