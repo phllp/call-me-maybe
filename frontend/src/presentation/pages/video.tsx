@@ -11,8 +11,8 @@ const Video: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
-  const smallFeedEl = useRef(null);
-  const largeFeedEl = useRef(null);
+  const smallFeedEl = useRef<HTMLVideoElement>(null);
+  const largeFeedEl = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const fetchMedia = async () => {
@@ -22,7 +22,6 @@ const Video: React.FC = () => {
       };
 
       try {
-        console.log('fetch media');
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         dispatch(addStream({ who: 'localStream', stream }));
       } catch (error) {
@@ -42,7 +41,7 @@ const Video: React.FC = () => {
           remoteVideoRef={largeFeedEl}
         />
       </div>
-      <ActionButtons smallFeedEl={smallFeedEl} />
+      <ActionButtons localVideoEl={smallFeedEl} />
     </div>
   );
 };
