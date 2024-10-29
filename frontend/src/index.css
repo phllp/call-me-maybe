@@ -11,7 +11,7 @@ nav {
   height: var(--NAVBAR_HEIGHT);
 }
 
-.chatContainer {
+main {
   max-height: calc(100svh - var(--NAVBAR_HEIGHT));
   min-height: calc(100svh - var(--NAVBAR_HEIGHT));
   background-color: var(--MAIN_COLOR);
