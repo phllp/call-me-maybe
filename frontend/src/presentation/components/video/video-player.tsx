@@ -1,18 +1,21 @@
-import React, { useRef, useEffect } from 'react';
+import { FC, RefObject, useEffect } from 'react';
 
 interface VideoPlayerProps {
   remoteStream: MediaStream | null;
   localStream: MediaStream | null;
+  remoteVideoRef: RefObject<HTMLVideoElement>;
+  localVideoRef: RefObject<HTMLVideoElement>;
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({
+const VideoPlayer: FC<VideoPlayerProps> = ({
   remoteStream,
   localStream,
+  remoteVideoRef,
+  localVideoRef,
 }) => {
-  const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const localVideoRef = useRef<HTMLVideoElement>(null);
-
-  // Attach streams to the video elements
+  /**
+   * Attach streams to the video elements
+   */
   useEffect(() => {
     if (remoteVideoRef.current && remoteStream) {
       remoteVideoRef.current.srcObject = remoteStream;
@@ -20,7 +23,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (localVideoRef.current && localStream) {
       localVideoRef.current.srcObject = localStream;
     }
-  }, [remoteStream, localStream]);
+  }, [remoteStream, localStream, remoteVideoRef, localVideoRef]);
 
   return (
     <div className="relative w-full h-full bg-gray-200 border-2 border-rose-800 rounded-md">
