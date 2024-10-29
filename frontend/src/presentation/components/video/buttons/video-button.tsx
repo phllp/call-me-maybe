@@ -1,15 +1,49 @@
-import { updateCallStatus } from '@store/features/call-status/call-status-slice';
-import { useAppDispatch, useAppSelector } from '@store/hooks';
+import { useAppSelector } from '@store/hooks';
 import { Video, VideoOff } from 'lucide-react';
-import { FC } from 'react';
+import { FC, RefObject, useEffect, useState } from 'react';
 
-const VideoButton: FC = () => {
+type VideoButtonProps = {
+  localVideoEl: RefObject<HTMLVideoElement>;
+};
+
+const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
   const callStatus = useAppSelector((state) => state.callStatus);
-  const dispatch = useAppDispatch();
+  const streams = useAppSelector((state) => state.streams);
+
+  const [pendingUpdate, setPendingUpdate] = useState(false);
 
   const videoBtnHandler = () => {
-    dispatch(updateCallStatus({ video: !callStatus.video }));
+    if (!localVideoEl.current) {
+      console.error('Video Button: local video element not found');
+      return;
+    }
+
+    if (callStatus.haveMedia) {
+      /** The button was clicked and  */
+      const localStream = streams.find((stream) => stream.who == 'localStream');
+      localVideoEl.current.srcObject = localStream!.stream;
+    } else {
+      /** The button was clicked, but media access not granted yet */
+      setPendingUpdate(true);
+    }
   };
+
+  /**
+   * Runs when the media access was granted, making sure that the MediaStream
+   * will be added to our video feed
+   */
+  useEffect(() => {
+    if (pendingUpdate && callStatus.haveMedia) {
+      if (!localVideoEl.current) {
+        console.error('Video Button: local video element not found');
+        return;
+      }
+      setPendingUpdate(false);
+      const localStream = streams.find((stream) => stream.who == 'localStream');
+      localVideoEl.current.srcObject = localStream!.stream;
+    }
+  }, [callStatus.haveMedia, localVideoEl, pendingUpdate, streams]);
+
   return (
     <>
       <button

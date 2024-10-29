@@ -1,5 +1,6 @@
 import ActionButtons from '@components/video/action-buttons';
 import VideoPlayer from '@components/video/video-player';
+import { updateCallStatus } from '@store/features/call-status/call-status-slice';
 import { addStream } from '@store/features/streams/streams-slice';
 import { useAppDispatch } from '@store/hooks';
 import { useEffect, useRef, useState } from 'react';
@@ -18,12 +19,13 @@ const Video: React.FC = () => {
     const fetchMedia = async () => {
       const constraints = {
         audio: true,
-        video: false,
+        video: true,
       };
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         dispatch(addStream({ who: 'localStream', stream }));
+        dispatch(updateCallStatus({ haveMedia: true }));
       } catch (error) {
         console.error(`Error fetching user media: ${error}`);
       }
