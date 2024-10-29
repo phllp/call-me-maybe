@@ -27,6 +27,7 @@
       "@core/*": ["src/core/*"],
       "@data/*": ["src/data/*"],
       "@external/*": ["src/external/*"],
+      "@store/*": ["src/store/*"],
       "@utils/*": ["src/utils/*"]
     }
   },

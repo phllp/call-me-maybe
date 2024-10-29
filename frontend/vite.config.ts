@@ -12,6 +12,7 @@ export default defineConfig({
       '@utils': path.resolve(__dirname, './src/utils'),
       '@data': path.resolve(__dirname, './src/data'),
       '@external': path.resolve(__dirname, './src/external'),
+      '@store': path.resolve(__dirname, './src/store'),
       '@core': path.resolve(__dirname, './src/core'),
     },
   },
