@@ -2,8 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type CallStatusState = {
   current: 'idle' | 'progress' | 'negotiating' | 'complete';
-  video: boolean;
-  audio: boolean;
+  video: 'off' | 'enabled' | 'disabled' | 'complete';
+  audio: 'off' | 'enabled' | 'disabled' | 'complete';
   audioDevice: string;
   videoDevice: string;
   shareScreen: boolean;
@@ -12,8 +12,8 @@ type CallStatusState = {
 
 const initialState: CallStatusState = {
   current: 'idle',
-  video: false,
-  audio: false,
+  video: 'off',
+  audio: 'off',
   audioDevice: 'default',
   videoDevice: 'default',
   shareScreen: false,
