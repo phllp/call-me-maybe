@@ -1,6 +1,7 @@
-import { useAppSelector } from '@store/hooks';
+import { useAppDispatch, useAppSelector } from '@store/hooks';
 import { Video, VideoOff } from 'lucide-react';
 import { FC, RefObject, useEffect, useState } from 'react';
+import startLocalVideoStream from './startLocalVideoStream';
 
 type VideoButtonProps = {
   localVideoEl: RefObject<HTMLVideoElement>;
@@ -9,6 +10,7 @@ type VideoButtonProps = {
 const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
   const callStatus = useAppSelector((state) => state.callStatus);
   const streams = useAppSelector((state) => state.streams);
+  const dispatch = useAppDispatch();
 
   const [pendingUpdate, setPendingUpdate] = useState(false);
 
@@ -22,6 +24,8 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
       /** The button was clicked and  */
       const localStream = streams.find((stream) => stream.who == 'localStream');
       localVideoEl.current.srcObject = localStream!.stream;
+
+      startLocalVideoStream(streams, dispatch);
     } else {
       /** The button was clicked, but media access not granted yet */
       setPendingUpdate(true);
