@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from '@store/hooks';
 import { Video, VideoOff } from 'lucide-react';
 import { FC, RefObject, useEffect, useState } from 'react';
 import startLocalVideoStream from './startLocalVideoStream';
+import { updateCallStatus } from '@store/features/call-status/call-status-slice';
 
 type VideoButtonProps = {
   localVideoEl: RefObject<HTMLVideoElement>;
@@ -19,10 +20,21 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
       console.error('Video Button: local video element not found');
       return;
     }
+    const localStream = streams.find((stream) => stream.who == 'localStream');
+    const tracks = localStream?.stream.getVideoTracks();
 
-    if (callStatus.haveMedia) {
+    if (callStatus.video == 'enabled') {
+      /** If the video is enabled, disable it  */
+      dispatch(updateCallStatus({ video: 'disabled' }));
+      /** Disables the video tracks */
+      tracks?.forEach((track) => (track.enabled = false));
+    } else if (callStatus.video == 'disabled') {
+      /** If the video is disabled, enable it */
+      dispatch(updateCallStatus({ video: 'enabled' }));
+      /** Enables the video tracks */
+      tracks?.forEach((track) => (track.enabled = true));
+    } else if (callStatus.haveMedia) {
       /** The button was clicked and  */
-      const localStream = streams.find((stream) => stream.who == 'localStream');
       localVideoEl.current.srcObject = localStream!.stream;
 
       startLocalVideoStream(streams, dispatch);
@@ -54,7 +66,7 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
         onClick={videoBtnHandler}
         className="videoBtnContainer flex flex-grow  items-center justify-center hover:bg-rose-300 hover:rounded-r-md"
       >
-        {callStatus.video ? (
+        {callStatus.video == 'enabled' ? (
           <VideoOff className="text-rose-900" />
         ) : (
           <Video className="text-rose-900" />
