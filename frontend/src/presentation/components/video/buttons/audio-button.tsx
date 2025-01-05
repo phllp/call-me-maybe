@@ -8,18 +8,24 @@ const AudioButton: FC = () => {
   const dispatch = useAppDispatch();
 
   const audioBtnHandler = () => {
-    dispatch(updateCallStatus({ audio: !callStatus.audio }));
+    if (callStatus.audio == 'enabled') {
+      dispatch(updateCallStatus({ audio: 'disabled' }));
+      return;
+    } else if (callStatus.audio == 'disabled') {
+      dispatch(updateCallStatus({ audio: 'enabled' }));
+      return;
+    }
   };
   return (
     <>
       <button
         onClick={audioBtnHandler}
-        className="audioBtnContainer flex flex-grow  items-center justify-center hover:bg-rose-300 hover:rounded-l-md"
+        className={`audionBtnContainer flex flex-grow items-center justify-center  hover:rounded-l-md ${callStatus.audio == 'disabled' ? 'bg-rose-300 hover:bg-rose-400' : 'bg-green-300 hover:bg-green-400'} rounded-l-md`}
       >
-        {callStatus.audio ? (
-          <MicOff className="text-rose-900" />
+        {callStatus.audio == 'enabled' ? (
+          <Mic className="text-gray-900" />
         ) : (
-          <Mic className="text-rose-900" />
+          <MicOff className="text-gray-900" />
         )}
       </button>
     </>

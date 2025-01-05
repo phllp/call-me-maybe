@@ -12,9 +12,9 @@ const ActionButtons: FC<ActionButtonsProps> = ({
   localVideoEl,
 }: ActionButtonsProps) => {
   return (
-    <div className="flex bg-rose-500 h-14 w-24 rounded-md">
+    <div className="flex bg-gray-200 border border-gray-600 h-14 w-24 rounded-md">
       <AudioButton />
-      <div className="w-0 h-full flex border-r-2 border-rose-900"></div>
+      <div className="w-0 h-full flex border-r border-gray-600"></div>
       <VideoButton localVideoEl={localVideoEl} />
     </div>
   );
