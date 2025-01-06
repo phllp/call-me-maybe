@@ -8,15 +8,11 @@ export const getDevices = () => {
   return new Promise<DevicesAvailable>(async (resolve, reject) => {
     const devices = await navigator.mediaDevices.enumerateDevices();
 
-    const videoDevices = devices.filter(
-      (device) => device.kind === 'videoinput'
-    );
-    const audioInputDevices = devices.filter(
-      (device) => device.kind === 'audioinput'
-    );
-    const audioOutputDevices = devices.filter(
-      (device) => device.kind === 'audiooutput'
-    );
+    const videoDevices = devices.filter((d) => d.kind === 'videoinput');
+    const audioInputDevices = devices.filter((d) => d.kind === 'audioinput');
+    const audioOutputDevices = devices.filter((d) => d.kind === 'audiooutput');
+
+    console.log('Devices:', devices);
 
     resolve({
       videoDevices,
@@ -25,3 +21,5 @@ export const getDevices = () => {
     } as DevicesAvailable);
   });
 };
+
+export default getDevices;
