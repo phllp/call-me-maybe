@@ -1,20 +1,17 @@
 import { FC } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { ChevronUp } from 'lucide-react';
-
-type Device = {
-  id: string;
-  label: string;
-};
+import { ChevronUp, CircleCheck } from 'lucide-react';
 
 type DeviceSelectionProps = {
-  devices: Device[];
+  selectedDeviceId: string | null;
+  devices: MediaDeviceInfo[];
   onSelect: (deviceId: string) => void;
   label?: string;
 };
 
 const DeviceSelection: FC<DeviceSelectionProps> = ({
   devices,
+  selectedDeviceId,
   label,
   onSelect,
 }) => {
@@ -25,7 +22,7 @@ const DeviceSelection: FC<DeviceSelectionProps> = ({
         <ChevronUp className="w-3 h-3 cursor-pointer" />
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
-        className="mt-2 w-fit bg-white border border-gray-200 rounded-md shadow-lg"
+        className="mt-2  bg-white border border-gray-200 rounded-md shadow-lg"
         side="top"
         align="center"
         sideOffset={5}
@@ -40,11 +37,16 @@ const DeviceSelection: FC<DeviceSelectionProps> = ({
         ) : (
           devices.map((device) => (
             <DropdownMenu.Item
-              key={device.id}
-              onSelect={() => onSelect(device.id)}
-              className="px-4 py-q cursor-pointer hover:bg-blue-100 focus:bg-blue-200 focus:outline-none"
+              key={device.deviceId}
+              onSelect={() => onSelect(device.deviceId)}
+              className="flex flex-grow pl-4 cursor-pointer hover:bg-blue-100 focus:bg-blue-200 focus:outline-none w-full items-center justify-between"
             >
-              {device.label}
+              <span>{device.label}</span>
+              {selectedDeviceId === device.deviceId ? (
+                <CircleCheck className="h-4 ml-3 mr-1" />
+              ) : (
+                <></>
+              )}
             </DropdownMenu.Item>
           ))
         )}
