@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-type StreamState = {
+export type StreamState = {
   who: string;
   stream: MediaStream;
   peerConnection?: RTCPeerConnection;
