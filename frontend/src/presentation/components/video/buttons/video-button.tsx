@@ -3,6 +3,9 @@ import { Video, VideoOff } from 'lucide-react';
 import { FC, RefObject, useEffect, useState } from 'react';
 import startLocalVideoStream from './startLocalVideoStream';
 import { updateCallStatus } from '@store/features/call-status/call-status-slice';
+import DeviceSelection from '@components/device-selection-dropdown';
+import { getDevices } from '@utils/get-devices';
+import { addStream } from '@store/features/streams/streams-slice';
 
 type VideoButtonProps = {
   localVideoEl: RefObject<HTMLVideoElement>;
@@ -14,6 +17,27 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
   const dispatch = useAppDispatch();
 
   const [pendingUpdate, setPendingUpdate] = useState(false);
+  const [videoDevices, setVideoDevices] = useState<MediaDeviceInfo[]>([]);
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const changeVideoDevice = async (deviceId: string) => {
+    // Asking again for permissions
+    const newConstraints = {
+      audio:
+        callStatus.audioDevice === 'default'
+          ? true
+          : { deviceId: { exact: callStatus.audioDevice } },
+      video: { deviceId: { exact: deviceId } },
+    };
+
+    const stream = await navigator.mediaDevices.getUserMedia(newConstraints);
+    dispatch(updateCallStatus({ videoDevice: deviceId }));
+    localVideoEl.current!.srcObject = stream;
+    dispatch(addStream({ stream, who: 'localStream' }));
+    dispatch(updateCallStatus({ video: 'enabled' }));
+    const tracks = stream.getVideoTracks();
+  };
 
   const videoBtnHandler = () => {
     if (!localVideoEl.current) {
@@ -60,19 +84,42 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
     }
   }, [callStatus.haveMedia, localVideoEl, pendingUpdate, streams]);
 
+  useEffect(() => {
+    if (dropdownOpen) {
+      const getDevicesAsync = async () => {
+        const devices = await getDevices();
+        setVideoDevices(devices.videoDevices);
+      };
+
+      getDevicesAsync();
+    }
+  }, [dropdownOpen]);
+
   return (
-    <>
+    <div className="flex flex-grow relative">
       <button
         onClick={videoBtnHandler}
-        className={`videoBtnContainer flex flex-grow items-center justify-center  hover:rounded-r-md ${callStatus.video != 'enabled' ? 'bg-rose-300 hover:bg-rose-400' : 'bg-green-300 hover:bg-green-400'} rounded-r-md`}
+        className={`flex items-center justify-center h-full w-full hover:rounded-r-md ${
+          callStatus.video !== 'enabled'
+            ? 'bg-rose-300 hover:bg-rose-400'
+            : 'bg-green-300 hover:bg-green-400'
+        } rounded-r-md`}
       >
-        {callStatus.video == 'enabled' ? (
+        {callStatus.video === 'enabled' ? (
           <Video className="text-gray-900" />
         ) : (
           <VideoOff className="text-gray-900" />
         )}
       </button>
-    </>
+      <div className="absolute -top-2 right-0">
+        <DeviceSelection
+          devices={videoDevices}
+          onSelect={changeVideoDevice}
+          setIsOpen={setDropdownOpen}
+          deviceType="video"
+        />
+      </div>
+    </div>
   );
 };
 
