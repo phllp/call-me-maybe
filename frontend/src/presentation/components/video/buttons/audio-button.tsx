@@ -20,7 +20,7 @@ const AudioButton: FC = () => {
     <>
       <button
         onClick={audioBtnHandler}
-        className={`audionBtnContainer flex flex-grow items-center justify-center  hover:rounded-l-md ${callStatus.audio == 'disabled' ? 'bg-rose-300 hover:bg-rose-400' : 'bg-green-300 hover:bg-green-400'} rounded-l-md`}
+        className={`audionBtnContainer flex flex-grow items-center justify-center  hover:rounded-l-md ${callStatus.audio != 'enabled' ? 'bg-rose-300 hover:bg-rose-400' : 'bg-green-300 hover:bg-green-400'} rounded-l-md`}
       >
         {callStatus.audio == 'enabled' ? (
           <Mic className="text-gray-900" />

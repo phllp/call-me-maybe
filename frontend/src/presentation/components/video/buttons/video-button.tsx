@@ -64,7 +64,7 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
     <>
       <button
         onClick={videoBtnHandler}
-        className={`videoBtnContainer flex flex-grow items-center justify-center  hover:rounded-r-md ${callStatus.video == 'disabled' ? 'bg-rose-300 hover:bg-rose-400' : 'bg-green-300 hover:bg-green-400'} rounded-r-md`}
+        className={`videoBtnContainer flex flex-grow items-center justify-center  hover:rounded-r-md ${callStatus.video != 'enabled' ? 'bg-rose-300 hover:bg-rose-400' : 'bg-green-300 hover:bg-green-400'} rounded-r-md`}
       >
         {callStatus.video == 'enabled' ? (
           <Video className="text-gray-900" />
