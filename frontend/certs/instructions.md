@@ -1,5 +1,8 @@
 Run the following command inside of this directory in order to generate the SSL certificates
 
 ```bash
-openssl req -x509 -newkey rsa:2048 -nodes -keyout localhost-key.pem -out localhost-cert.pem -days 365
+mkcert localhost
 ```
+
+If you dont have mkcert installed yet, [follow the instructions here](https://github.com/FiloSottile/mkcert).
+Don't forget to run `mkcert -install`, to install a root certificate in your computer so browsers will trust your certificates.
