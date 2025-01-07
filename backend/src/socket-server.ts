@@ -3,7 +3,7 @@ import { Server as SocketIOServer } from 'socket.io';
 export default (httpsServer: any, app: any) => {
   const io = new SocketIOServer(httpsServer, {
     cors: {
-      origin: ['https://localhost:5173', 'http://localhost:5173'],
+      origin: ['https://localhost:5173'],
       methods: ['GET', 'POST'],
     },
   });
