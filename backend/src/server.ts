@@ -9,7 +9,7 @@ import routes from './routes';
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 const corsOptions = {
-  origin: ['https://localhost:3000'],
+  origin: ['https://localhost:5173'],
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
@@ -28,10 +28,10 @@ if (!isDevelopment) {
     console.log('Production mode');
     // Leitura dos certificados SSL
     const key = readFileSync(
-      path.join(__dirname, '..', 'certs', 'create-cert-key.pem')
+      path.join(__dirname, '..', 'certs', 'localhost-key.pem')
     );
     const cert = readFileSync(
-      path.join(__dirname, '..', 'certs', 'create-cert.pem')
+      path.join(__dirname, '..', 'certs', 'localhost.pem')
     );
     // Criação do servidor HTTPS
     httpsServer = createServerHttps({ key, cert }, app);
