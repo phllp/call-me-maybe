@@ -5,23 +5,15 @@ import { ChevronUp, CircleCheck } from 'lucide-react';
 type DeviceItemProps = {
   device: MediaDeviceInfo;
   selected: string;
-  onSelect: (deviceId: string) => void;
+  onSelect: () => void;
   setSelected: (deviceId: string) => void;
 };
 
-const DeviceItem: FC<DeviceItemProps> = ({
-  device,
-  onSelect,
-  selected,
-  setSelected,
-}) => {
+const DeviceItem: FC<DeviceItemProps> = ({ device, onSelect, selected }) => {
   return (
     <DropdownMenu.Item
       key={device.deviceId}
-      onSelect={() => {
-        onSelect(device.deviceId);
-        setSelected(device.deviceId);
-      }}
+      onSelect={onSelect}
       className="flex flex-grow pl-4 cursor-pointer hover:bg-gray-200 focus:outline-none w-full items-center justify-between"
     >
       <span className="text-gray-900">{device.label}</span>
@@ -76,9 +68,10 @@ const DeviceSelection: FC<DeviceSelectionProps> = ({
       if (d.kind == 'audioinput') {
         audioInputEl.push(
           <DeviceItem
+            key={`input${d.deviceId}`}
             device={d}
             onSelect={() => {
-              onSelect(d.deviceId);
+              onSelect(`input${d.deviceId}`);
               setSelected(d.deviceId);
             }}
             selected={selected}
@@ -88,9 +81,10 @@ const DeviceSelection: FC<DeviceSelectionProps> = ({
       } else if (d.kind == 'audiooutput') {
         audioOutputEl.push(
           <DeviceItem
+            key={`output${d.deviceId}`}
             device={d}
             onSelect={() => {
-              onSelect(d.deviceId);
+              onSelect(`output${d.deviceId}`);
               setSelected(d.deviceId);
             }}
             selected={selected}
