@@ -1,18 +1,12 @@
 import jwt from 'jsonwebtoken';
+import { Session } from './routes';
 
-const generateInviteLink = () => {
+const encodeSessionData = (data: Session) => {
   const jwtSecret = process.env.JWT_SECRET;
   if (!jwtSecret) {
     throw new Error('JWT_SECRET is not defined');
   }
-  const myData = {
-    email: 'johndoe@jd.com',
-  };
-
-  const token = jwt.sign(myData, jwtSecret);
-
-  const inviteLink = `http://localhost:5173/video?token=${token}`;
-  return inviteLink;
+  return jwt.sign(data, jwtSecret);
 };
 
 const validateToken = (token: string) => {
@@ -29,4 +23,4 @@ const validateToken = (token: string) => {
   }
 };
 
-export { generateInviteLink, validateToken };
+export { encodeSessionData, validateToken };
