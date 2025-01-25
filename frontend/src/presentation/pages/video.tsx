@@ -1,5 +1,5 @@
-import ActionButtons from '@components/video/action-buttons';
-import VideoPlayer from '@components/video/video-player';
+import ActionButtons from '@components/call/action-buttons';
+import VideoPlayer from '@components/call/video-player';
 import { updateCallStatus } from '@store/features/call-status/call-status-slice';
 import { addStream } from '@store/features/streams/streams-slice';
 import { useAppDispatch } from '@store/hooks';

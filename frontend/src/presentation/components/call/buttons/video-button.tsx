@@ -3,9 +3,9 @@ import { Video, VideoOff } from 'lucide-react';
 import { FC, RefObject, useEffect, useState } from 'react';
 import startLocalVideoStream from './startLocalVideoStream';
 import { updateCallStatus } from '@store/features/call-status/call-status-slice';
-import DeviceSelection from '@components/device-selection-dropdown';
 import { getDevices } from '@utils/get-devices';
 import { addStream } from '@store/features/streams/streams-slice';
+import VideoDevicesDropdown from './video-devices-dropdown';
 
 type VideoButtonProps = {
   localVideoEl: RefObject<HTMLVideoElement>;
@@ -19,25 +19,8 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
   const [pendingUpdate, setPendingUpdate] = useState(false);
   const [videoDevices, setVideoDevices] = useState<MediaDeviceInfo[]>([]);
 
+  const [selectedDevice, setSelectedDevice] = useState<string>('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  const changeVideoDevice = async (deviceId: string) => {
-    // Asking again for permissions
-    const newConstraints = {
-      audio:
-        callStatus.audioDevice === 'default'
-          ? true
-          : { deviceId: { exact: callStatus.audioDevice } },
-      video: { deviceId: { exact: deviceId } },
-    };
-
-    const stream = await navigator.mediaDevices.getUserMedia(newConstraints);
-    dispatch(updateCallStatus({ videoDevice: deviceId }));
-    localVideoEl.current!.srcObject = stream;
-    dispatch(addStream({ stream, who: 'localStream' }));
-    dispatch(updateCallStatus({ video: 'enabled' }));
-    const tracks = stream.getVideoTracks();
-  };
 
   const videoBtnHandler = () => {
     if (!localVideoEl.current) {
@@ -59,8 +42,8 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
       tracks?.forEach((track) => (track.enabled = true));
     } else if (callStatus.haveMedia) {
       /** The button was clicked and  */
-      localVideoEl.current.srcObject = localStream!.stream;
 
+      localVideoEl.current.srcObject = localStream!.stream;
       startLocalVideoStream(streams, dispatch);
     } else {
       /** The button was clicked, but media access not granted yet */
@@ -84,6 +67,9 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
     }
   }, [callStatus.haveMedia, localVideoEl, pendingUpdate, streams]);
 
+  /**
+   * Updates the devices list when the dropdown is opened
+   */
   useEffect(() => {
     if (dropdownOpen) {
       const getDevicesAsync = async () => {
@@ -94,6 +80,29 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
       getDevicesAsync();
     }
   }, [dropdownOpen]);
+
+  const changeVideoDevice = async () => {
+    try {
+      // Asking again for permissions
+      const newConstraints = {
+        audio:
+          callStatus.audioDevice === 'default'
+            ? true
+            : { deviceId: { exact: callStatus.audioDevice } },
+        video: { deviceId: { exact: selectedDevice } },
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(newConstraints);
+      dispatch(updateCallStatus({ videoDevice: selectedDevice }));
+      localVideoEl.current!.srcObject = stream;
+      dispatch(addStream({ stream, who: 'localStream' }));
+      dispatch(updateCallStatus({ video: 'enabled' }));
+      // todo come back to this later
+      // const tracks = stream.getVideoTracks();
+    } catch (error) {
+      console.error(`Error changing video device: ${error}`);
+    }
+  };
 
   return (
     <div className="flex flex-grow relative">
@@ -112,11 +121,12 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
         )}
       </button>
       <div className="absolute -top-2 right-0">
-        <DeviceSelection
+        <VideoDevicesDropdown
           devices={videoDevices}
-          onSelect={changeVideoDevice}
-          setIsOpen={setDropdownOpen}
-          deviceType="video"
+          selectedDevice={selectedDevice}
+          setSelectedDevice={setSelectedDevice}
+          setDropdownOpen={() => setDropdownOpen(!dropdownOpen)}
+          changeVideoDevice={changeVideoDevice}
         />
       </div>
     </div>

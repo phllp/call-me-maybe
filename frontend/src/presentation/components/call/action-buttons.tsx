@@ -1,5 +1,4 @@
 import { FC, RefObject } from 'react';
-// import HangupButton from '@components/video/hangup-button';
 import AudioButton from './buttons/audio-button';
 import VideoButton from './buttons/video-button';
 
@@ -7,7 +6,6 @@ type ActionButtonsProps = {
   localVideoEl: RefObject<HTMLVideoElement>;
 };
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 const ActionButtons: FC<ActionButtonsProps> = ({
   localVideoEl,
 }: ActionButtonsProps) => {

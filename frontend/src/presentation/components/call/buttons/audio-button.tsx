@@ -1,4 +1,3 @@
-import DeviceSelection from '@components/device-selection-dropdown';
 import { updateCallStatus } from '@store/features/call-status/call-status-slice';
 import { addStream } from '@store/features/streams/streams-slice';
 import { useAppDispatch, useAppSelector } from '@store/hooks';
@@ -6,6 +5,7 @@ import getDevices from '@utils/get-devices';
 import { Mic, MicOff } from 'lucide-react';
 import { FC, RefObject, useEffect, useState } from 'react';
 import startAudioStream from './startAudioStream';
+import AudioDevicesDropdown from './audio-devices-dropdown'; // AudioDeviceTypes,
 
 type AudioButtonProps = {
   localVideoEl: RefObject<HTMLVideoElement>;
@@ -16,38 +16,11 @@ const AudioButton: FC<AudioButtonProps> = ({ localVideoEl }) => {
   const streams = useAppSelector((state) => state.streams);
   const dispatch = useAppDispatch();
 
-  const [pendingUpdate, setPendingUpdate] = useState(false);
   const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([]);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  const changeAudioDevice = async (id: string) => {
-    const deviceId = id.slice(5); // Removes 'input' or 'output' from the id
-    const audioType = id.slice(0, 5); // Gets 'input' or 'output' from the id
-    console.log('changeAudioDevice', deviceId, audioType);
-
-    if (audioType === 'output') {
-      localVideoEl.current?.setSinkId(deviceId);
-    } else if (audioType === 'input') {
-      // Asking again for permissions
-      const newConstraints = {
-        audio: { deviceId: { exact: deviceId } },
-        video:
-          callStatus.videoDevice === 'default'
-            ? true
-            : { deviceId: { exact: callStatus.videoDevice } },
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(newConstraints);
-      dispatch(updateCallStatus({ audioDevice: deviceId }));
-      localVideoEl.current!.srcObject = stream;
-      dispatch(addStream({ stream, who: 'localStream' }));
-      dispatch(updateCallStatus({ audio: 'enabled' }));
-      const tracks = stream.getAudioTracks();
-    } else {
-      console.error('AudioButton: Invalid audio type');
-    }
-  };
+  const [selectedInput, setSelectedInput] = useState('default');
+  const [selectedOutput, setSelectedOutput] = useState('default');
 
   const audioBtnHandler = () => {
     if (!localVideoEl.current) {
@@ -68,7 +41,9 @@ const AudioButton: FC<AudioButtonProps> = ({ localVideoEl }) => {
       return;
     } else {
       // Audio is off
-      changeAudioDevice('inputdefault');
+      // changeAudioDevice(AudioDeviceTypes.INPUT);
+      console.log('should happen here');
+      changeAudioDevice();
       startAudioStream(streams);
     }
   };
@@ -85,6 +60,36 @@ const AudioButton: FC<AudioButtonProps> = ({ localVideoEl }) => {
       getDevicesAsync();
     }
   }, [dropdownOpen]);
+
+  const changeAudioDevice = async () => {
+    try {
+      // Updates audio output
+      localVideoEl.current?.setSinkId(selectedOutput);
+
+      // Updates audio input
+      const newConstraints = {
+        audio: { deviceId: { exact: selectedInput } },
+        video:
+          callStatus.videoDevice === 'default'
+            ? true
+            : { deviceId: { exact: callStatus.videoDevice } },
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(newConstraints);
+
+      dispatch(addStream({ stream, who: 'localStream' }));
+      dispatch(updateCallStatus({ audioDevice: selectedInput }));
+      dispatch(updateCallStatus({ audio: 'enabled' }));
+
+      // todo come back to this later
+      // const tracks = stream.getAudioTracks();
+      // } else {
+      //   console.error('AudioButton: Invalid audio type');
+      // }
+    } catch (error) {
+      console.error(`Error changing audio device: ${error}`);
+    }
+  };
 
   return (
     <>
@@ -104,11 +109,15 @@ const AudioButton: FC<AudioButtonProps> = ({ localVideoEl }) => {
           )}
         </button>
         <div className="absolute -top-2 right-0">
-          <DeviceSelection
+          <AudioDevicesDropdown
             devices={audioDevices}
-            onSelect={changeAudioDevice}
-            setIsOpen={setDropdownOpen}
-            deviceType="audio"
+            // onSelect={changeAudioDevice}
+            setDropdownOpen={() => setDropdownOpen(!dropdownOpen)}
+            selectedInput={selectedInput}
+            setSelectedInput={setSelectedInput}
+            selectedOutput={selectedOutput}
+            setSelectedOutput={setSelectedOutput}
+            changeAudioDevice={changeAudioDevice}
           />
         </div>
       </div>
