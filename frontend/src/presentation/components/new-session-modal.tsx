@@ -4,6 +4,8 @@ import { Users } from 'lucide-react';
 import api from '@external/axios';
 import { useNavigate } from 'react-router-dom';
 import { Session } from '@core/entities/session';
+import { useAppDispatch } from '@store/hooks';
+import { updateUserData } from '@store/features/user/user-slice';
 
 type NewSessionProps = {
   onCancel?: () => void;
@@ -12,6 +14,7 @@ type NewSessionProps = {
 export default function NewSession({ onCancel }: NewSessionProps) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   // State to store the form data
   const [formData, setFormData] = useState({
@@ -45,8 +48,13 @@ export default function NewSession({ onCancel }: NewSessionProps) {
         hostName: formData.hostName,
       });
       if (response.status === 200) {
-        const token: Session = response.data;
+        const token: string = response.data;
         console.log('Sessão criada com sucesso:', token);
+        const validatedToken = await api.post('/validate-token', { token });
+        const tokenData: Session = validatedToken.data;
+        dispatch(
+          updateUserData({ id: tokenData.hostId, name: tokenData.hostName })
+        );
         navigate(`/video?token=${token}`);
         closeModal();
         return;
