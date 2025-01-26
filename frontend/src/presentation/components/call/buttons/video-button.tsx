@@ -19,7 +19,6 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
   const [pendingUpdate, setPendingUpdate] = useState(false);
   const [videoDevices, setVideoDevices] = useState<MediaDeviceInfo[]>([]);
 
-  const [selectedDevice, setSelectedDevice] = useState<string>('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const videoBtnHandler = () => {
@@ -42,7 +41,6 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
       tracks?.forEach((track) => (track.enabled = true));
     } else if (callStatus.haveMedia) {
       /** The button was clicked and  */
-
       localVideoEl.current.srcObject = localStream!.stream;
       startLocalVideoStream(streams, dispatch);
     } else {
@@ -81,7 +79,7 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
     }
   }, [dropdownOpen]);
 
-  const changeVideoDevice = async () => {
+  const changeVideoDevice = async (deviceId: string) => {
     try {
       // Asking again for permissions
       const newConstraints = {
@@ -89,11 +87,11 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
           callStatus.audioDevice === 'default'
             ? true
             : { deviceId: { exact: callStatus.audioDevice } },
-        video: { deviceId: { exact: selectedDevice } },
+        video: { deviceId: { exact: deviceId } },
       };
 
       const stream = await navigator.mediaDevices.getUserMedia(newConstraints);
-      dispatch(updateCallStatus({ videoDevice: selectedDevice }));
+      dispatch(updateCallStatus({ videoDevice: deviceId }));
       localVideoEl.current!.srcObject = stream;
       dispatch(addStream({ stream, who: 'localStream' }));
       dispatch(updateCallStatus({ video: 'enabled' }));
@@ -123,8 +121,6 @@ const VideoButton: FC<VideoButtonProps> = ({ localVideoEl }) => {
       <div className="absolute -top-2 right-0">
         <VideoDevicesDropdown
           devices={videoDevices}
-          selectedDevice={selectedDevice}
-          setSelectedDevice={setSelectedDevice}
           setDropdownOpen={() => setDropdownOpen(!dropdownOpen)}
           changeVideoDevice={changeVideoDevice}
         />

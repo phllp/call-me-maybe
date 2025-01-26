@@ -32,10 +32,6 @@ const DeviceItem: FC<DeviceItemProps> = ({ device, onSelect, selected }) => {
 
 type AudioDevicesDropdownProps = {
   devices: MediaDeviceInfo[];
-  // onSelect: (deviceId: string) => void;
-  // handleOpen: () => void;
-  // handleClose: () => void;
-  // isOpen: boolean;
   selectedInput: string;
   setSelectedInput: (deviceId: string) => void;
   selectedOutput: string;
@@ -46,10 +42,6 @@ type AudioDevicesDropdownProps = {
 
 const AudioDevicesDropdown: FC<AudioDevicesDropdownProps> = ({
   devices,
-  // onSelect,
-  // handleOpen,
-  // handleClose,
-  // isOpen,
   selectedInput,
   setSelectedInput,
   selectedOutput,
@@ -116,18 +108,15 @@ const AudioDevicesDropdown: FC<AudioDevicesDropdownProps> = ({
     if (deviceType === AudioDeviceTypes.INPUT) {
       setSelectedInput(rawDevideId);
       changeAudioDevice(rawDevideId);
-      // onSelect(rawDevideId);
     } else {
       setSelectedOutput(rawDevideId);
       changeAudioDevice(rawDevideId);
-      // onSelect(rawDevideId);
     }
   };
 
   return (
     <DropdownMenu.Root onOpenChange={setDropdownOpen}>
       <DropdownMenu.Trigger className="px-1 py-1 bg-gray-300  border border-gray-500 rounded-md shadow-sm hover:bg-gray-600 text-gray-800 hover:text-gray-50 focus:outline-none  ">
-        {/* {label} */}
         <ChevronUp className="w-3 h-3 cursor-pointer" />
       </DropdownMenu.Trigger>
       <DropdownMenu.Content

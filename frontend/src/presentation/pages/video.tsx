@@ -26,6 +26,17 @@ const Video: React.FC = () => {
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         dispatch(addStream({ who: 'localStream', stream }));
         dispatch(updateCallStatus({ haveMedia: true }));
+
+        stream.getTracks().forEach((track) => {
+          const settings = track.getSettings();
+          const deviceId = settings.deviceId;
+
+          if (track.kind === 'audio') {
+            dispatch(updateCallStatus({ audioDevice: deviceId }));
+          } else if (track.kind === 'video') {
+            dispatch(updateCallStatus({ videoDevice: deviceId }));
+          }
+        });
       } catch (error) {
         console.error(`Error fetching user media: ${error}`);
       }
