@@ -2,15 +2,16 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import fs from 'fs';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // https://vite.dev/config/
 export default defineConfig({
   server: {
-    https: {
-      key: fs.readFileSync(
-        path.resolve(__dirname, './certs/localhost-key.pem')
-      ),
-      cert: fs.readFileSync(path.resolve(__dirname, './certs/localhost.pem')),
+    https: process.env.ENV !== 'development' && {
+      key: fs.readFileSync(path.resolve(__dirname, './certs/staging-key.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, './certs/staging.pem')),
     },
   },
   plugins: [react()],
