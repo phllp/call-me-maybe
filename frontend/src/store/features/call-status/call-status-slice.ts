@@ -8,6 +8,7 @@ type CallStatusState = {
   videoDevice: string;
   shareScreen: boolean;
   haveMedia: boolean;
+  haveCreatedOffer: boolean;
 };
 
 const initialState: CallStatusState = {
@@ -18,6 +19,7 @@ const initialState: CallStatusState = {
   videoDevice: 'default',
   shareScreen: false,
   haveMedia: false,
+  haveCreatedOffer: false,
 };
 
 const callStatusSlice = createSlice({
