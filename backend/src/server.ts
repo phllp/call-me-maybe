@@ -8,7 +8,7 @@ import cors from 'cors';
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 const corsOptions = {
-  origin: ['https://localhost:5173'],
+  origin: ['http://localhost:5173'],
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
