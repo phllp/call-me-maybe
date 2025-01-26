@@ -2,18 +2,27 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useEffect, useState } from 'react';
 import { MessageCirclePlus } from 'lucide-react';
 import api from '@external/axios';
+import { Session } from '@core/entities/session';
 
-export default function InviteLink() {
+type InviteLinkProps = {
+  callMetadata?: Session;
+};
+
+const InviteLink: React.FC<InviteLinkProps> = ({ callMetadata }) => {
   const [open, setOpen] = useState(false);
   const [inviteLink, setInviteLink] = useState('');
 
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    api.get('/invite-link').then((response) => {
-      setInviteLink(response.data);
-    });
-  }, []);
+    const inviteLinkAsync = async () => {
+      const baseUrl = 'http://localhost:3000';
+      api.post('/invite-link', { callMetadata }).then((response) => {
+        setInviteLink(`${baseUrl}${response.data}`);
+      });
+    };
+    inviteLinkAsync();
+  }, [callMetadata]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(inviteLink);
@@ -57,4 +66,6 @@ export default function InviteLink() {
       </Dialog.Portal>
     </Dialog.Root>
   );
-}
+};
+
+export default InviteLink;

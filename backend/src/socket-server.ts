@@ -1,4 +1,5 @@
 import { Socket, Server as SocketIOServer } from 'socket.io';
+import { CallMetadata } from './routes';
 
 enum ConnType {
   HOST = 'HOST',
@@ -10,8 +11,17 @@ type SocketUser = {
   socketId: string;
 };
 
+type CallOffer = {
+  metadata: CallMetadata;
+  offer: RTCSessionDescriptionInit;
+  offerIceCandidates?: RTCIceCandidate[];
+  answer?: RTCSessionDescriptionInit;
+  answerIceCandidates?: RTCIceCandidate[];
+};
+
 let connectedHostSockets: SocketUser[] = [];
 let connectedGuestSockets: SocketUser[] = [];
+let callOffers: CallOffer[] = [];
 
 /**
  * Adds the host to the connected sockets list, or update it's ID
@@ -93,11 +103,17 @@ export default (server: any, app: any) => {
       return;
     }
 
-    socket.on(
-      'newOffer',
-      ({ hostId: string, offer: RTCSessionDescription }) => {
-        console.log('New Offer Received:', hostId);
-      }
-    );
+    type NewOfferPayload = {
+      metadata: CallMetadata;
+      offer: RTCSessionDescriptionInit;
+    };
+    socket.on('newOffer', ({ metadata, offer }: NewOfferPayload) => {
+      console.log('New Offer Received:', metadata);
+      const callOffer: CallOffer = {
+        metadata,
+        offer,
+      };
+      callOffers.push(callOffer);
+    });
   });
 };

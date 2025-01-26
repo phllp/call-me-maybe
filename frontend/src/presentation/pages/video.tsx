@@ -9,6 +9,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Session } from '@core/entities/session';
 import api from '@external/axios';
 import createPeerConnection from '@external/socket.io/create-peer-connection';
+import InviteLink from '@components/invitation-link-modal';
 
 const Video: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -24,15 +25,23 @@ const Video: React.FC = () => {
 
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [callMetadata, setCallMetadata] = useState<Session>();
 
   const smallFeedEl = useRef<HTMLVideoElement>(null);
   const largeFeedEl = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    const newOfferAsync = async () => {
+    const fetchToken = async () => {
       const token = searchParams.get('token');
       const validatedToken = await api.post('/validate-token', { token });
       const tokenData: Session = validatedToken.data;
+      setCallMetadata(tokenData);
+    };
+    fetchToken();
+  }, []);
+
+  useEffect(() => {
+    const newOfferAsync = async () => {
       console.log('streams:', streams);
       streams.forEach(async (s) => {
         if (s.who !== 'localStream') {
@@ -41,11 +50,16 @@ const Video: React.FC = () => {
             const offer = await pc?.createOffer();
             pc?.setLocalDescription(offer);
 
-            if (isConnected) {
+            if (isConnected && callMetadata) {
               console.log('emitting new offer');
-              emit('newOffer', { hostId: tokenData.hostId, offer });
+              emit('newOffer', { metadata: callMetadata, offer });
             } else {
-              console.error('Error creating offer, socket nor connected');
+              console.error(
+                'Error creating offer. Socket Connected:',
+                isConnected,
+                'Call Metadata:',
+                callMetadata
+              );
             }
           } catch (error) {
             console.error('Error creating offer:', error);
@@ -131,7 +145,10 @@ const Video: React.FC = () => {
           remoteVideoRef={largeFeedEl}
         />
       </div>
-      <ActionButtons localVideoEl={smallFeedEl} />
+      <div className="flex flex-row gap-4">
+        <ActionButtons localVideoEl={smallFeedEl} />
+        <InviteLink callMetadata={callMetadata} />
+      </div>
     </div>
   );
 };
