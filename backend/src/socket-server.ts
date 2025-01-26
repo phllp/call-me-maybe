@@ -86,5 +86,18 @@ export default (server: any, app: any) => {
     const guestId = socket.handshake.auth.guestId as string;
 
     const connType = handleConnection(socket, hostId, guestId);
+
+    if (!connType) {
+      console.warn('[socket.io] Early disconnection');
+      socket.disconnect(true);
+      return;
+    }
+
+    socket.on(
+      'newOffer',
+      ({ hostId: string, offer: RTCSessionDescription }) => {
+        console.log('New Offer Received:', hostId);
+      }
+    );
   });
 };
