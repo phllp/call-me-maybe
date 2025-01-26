@@ -7,6 +7,7 @@ import {
 import counterReducer from '@store/features/counter/counter-slice';
 import callStatusReducer from '@store/features/call-status/call-status-slice';
 import streamsReducer from '@store/features/streams/streams-slice';
+import userReducer from '@store/features/user/user-slice';
 
 const isSerializable = (value: unknown) =>
   value instanceof MediaStream ||
@@ -24,6 +25,7 @@ export const store = configureStore({
     counter: counterReducer,
     callStatus: callStatusReducer,
     streams: streamsReducer,
+    user: userReducer,
   },
   // todo: temporary solution. (not)
   middleware: () => new Tuple(serializableMiddleware),
